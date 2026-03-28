@@ -31,5 +31,7 @@ void vga_clear(void);
 void vga_set_color(uint8_t fg, uint8_t bg);
 void vga_putchar(char c);
 void vga_writestring(const char* str);
+void vga_putstr(const char* str);
+void vga_puthex(uint32_t num);
 
 #endif

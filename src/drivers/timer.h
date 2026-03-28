@@ -4,6 +4,6 @@
 #include <stdint.h>
 
 void timer_init(uint32_t frequency);
-void timer_handler(void);
+// Строку с timer_handler удаляем полностью!
 
 #endif

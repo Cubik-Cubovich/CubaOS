@@ -59,3 +59,20 @@ void vga_writestring(const char* str) {
         vga_putchar(*str++);
     }
 }
+// Вывод строки
+void vga_putstr(const char* str) {
+    while (*str) {
+        vga_putchar(*str++);
+    }
+}
+
+// Вывод 32-битного числа в шестнадцатеричном виде
+void vga_puthex(uint32_t num) {
+    vga_putchar('0');
+    vga_putchar('x');
+    // Выводим 8 шестнадцатеричных цифр (32 бита)
+    for (int i = 28; i >= 0; i -= 4) {
+        uint8_t digit = (num >> i) & 0xF;
+        vga_putchar(digit < 10 ? '0' + digit : 'A' + digit - 10);
+    }
+}
