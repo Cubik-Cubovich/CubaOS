@@ -36,7 +36,7 @@ static void handle_char(char c) {
 }
 
 void shell_init(void) {
-    vga_clear();
+    vga_putchar('\n');
     vga_writestring("Welcome to CubaOS shell!\n");
     vga_writestring("Type something and press Enter to echo.\n");
     vga_putstr("$ ");

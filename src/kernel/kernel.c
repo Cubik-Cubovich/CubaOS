@@ -6,6 +6,7 @@
 #include "../drivers/isr.h"
 #include "../drivers/keyboard.h"
 #include "../shell/shell.h"
+#include "../memory/paging.h"        // <-- новый заголовок
 
 void kernel_main(uint32_t magic, struct multiboot_info* info) {
     (void)magic;
@@ -22,7 +23,11 @@ void kernel_main(uint32_t magic, struct multiboot_info* info) {
     keyboard_init();
     vga_writestring("KEYBOARD OK\n");
 
-    asm volatile("sti");   // разрешить прерывания
+    // Включаем paging
+    paging_init();
+
+    asm volatile("sti");
+    vga_writestring("INTERRUPTS ENABLED\n");
 
     shell_init();
     shell_run();           // никогда не возвращается

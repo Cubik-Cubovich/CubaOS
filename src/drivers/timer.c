@@ -9,9 +9,9 @@ volatile uint32_t tick_count = 0;
 static void timer_callback(registers_t *regs) {
     (void)regs;
     tick_count++;
-    if (tick_count % 100 == 0) {
-        vga_putchar('*');
-    }
+    //if (tick_count % 100 == 0) {
+    //    vga_putchar('*');
+    //}
 }
 
 void timer_init(uint32_t frequency) {
@@ -24,4 +24,10 @@ void timer_init(uint32_t frequency) {
 
     // Размаскировать IRQ0 в PIC
     pic_mask_irq(0, 0);   // <-- раскомментировать и убедиться, что pic.h подключён
+}
+void timer_set_frequency(uint32_t frequency) {
+    uint32_t divisor = 1193180 / frequency;
+    outb(0x43, 0x36);          // командный байт: канал 0, режим 3, LSB+MSB
+    outb(0x40, divisor & 0xFF);
+    outb(0x40, (divisor >> 8) & 0xFF);
 }
