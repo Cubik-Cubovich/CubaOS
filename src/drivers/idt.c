@@ -32,6 +32,8 @@ void idt_init(void) {
      */
     extern void irq0(void);
     idt_set_gate(0x20, (uint32_t)irq0, 0x08, 0x8E);
+    extern void irq1(void);  // объявление обработчика из isr.asm
+    idt_set_gate(0x21, (uint32_t)irq1, 0x08, 0x8E);
 
     // 4. Загружаем IDT в регистр процессора
     asm volatile ("lidt %0" : : "m" (idtp));
