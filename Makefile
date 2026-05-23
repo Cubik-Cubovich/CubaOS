@@ -30,6 +30,13 @@ OBJECTS = $(ASM_OBJECTS) $(C_OBJECTS)
 KERNEL = $(BINDIR)/kernel.elf
 ISO = $(BUILDDIR)/$(PROJECT).iso
 
+DEBUG ?= 0
+ifeq ($(DEBUG),1)
+    CFLAGS += -DDEBUG
+    # можно добавить -O0 -ggdb уже есть
+endif
+
+
 all: $(KERNEL)
 
 $(KERNEL): $(OBJECTS) linker.ld
@@ -60,6 +67,28 @@ iso: $(KERNEL)
 
 run-iso: iso
 	qemu-system-i386 -cdrom $(ISO)
+
+# =============== ОТЛАДКА ===============
+
+# Обычная отладка (без tmux)
+debug: CFLAGS += -DDEBUG
+debug: clean iso
+	@echo "Starting QEMU with GDB server on port 1234"
+	@echo "In another terminal run: gdb -x gdbinit"
+	qemu-system-i386 -cdrom $(ISO) -s -S
+
+# tmux-отладка (рекомендуется)
+DEBUG_SESSION = "cubaos_debug"
+
+debug-tmux: CFLAGS += -DDEBUG
+debug-tmux: clean iso
+	@echo "Killing old tmux session if exists..."
+	@tmux kill-session -t $(DEBUG_SESSION) 2>/dev/null || true
+	@echo "Creating new tmux session: $(DEBUG_SESSION)"
+	@tmux new-session -d -s $(DEBUG_SESSION) -n "qemu" "qemu-system-i386 -cdrom $(ISO) -s -S"
+	@tmux split-window -t $(DEBUG_SESSION) -h "gdb -x gdbinit"
+	@tmux select-layout -t $(DEBUG_SESSION) even-horizontal
+	@tmux attach-session -t $(DEBUG_SESSION)
 
 clean:
 	rm -rf $(BUILDDIR)
