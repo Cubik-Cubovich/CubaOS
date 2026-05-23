@@ -7,6 +7,7 @@
 #include "../drivers/keyboard.h"
 #include "../shell/shell.h"
 #include "../memory/paging.h"        // <-- новый заголовок
+#include "../memory/pagefault.h"
 
 void kernel_main(uint32_t magic, struct multiboot_info* info) {
     (void)magic;
@@ -26,9 +27,11 @@ void kernel_main(uint32_t magic, struct multiboot_info* info) {
     // Включаем paging
     paging_init();
 
+    register_interrupt_handler(14, page_fault_handler);
+
     asm volatile("sti");
     vga_writestring("INTERRUPTS ENABLED\n");
-
+    
     shell_init();
     shell_run();           // никогда не возвращается
 }
